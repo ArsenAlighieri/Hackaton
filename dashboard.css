@@ -1,0 +1,85 @@
+body {
+    margin: 0px;
+    overflow: hidden;
+}
+
+.main {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    height: 100vh;
+}
+
+/* Sol Menü */
+.veteriner-dashboard {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.5); /* beyaz ama %50 saydam */
+    position: relative;
+    z-index: 10;
+
+
+
+}
+
+.veteriner-dashboard img {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+    border: 1px solid transparent;
+    transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s linear;
+    padding: 10px;
+}
+
+.veteriner-dashboard img:hover {
+    border-color: black;
+    box-shadow: 3px 4px 0px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+}
+
+/* İçerik Alanı */
+.content-frame {
+    width: 100%;
+    height: 100vh;
+    border: none;
+}
+
+/* Tooltip */
+.floating-tooltip {
+    position: fixed;
+    padding: 6px 10px;
+    background-color: black;
+    color: white;
+    border-radius: 5px;
+    font-size: 13px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 9999;
+    white-space: nowrap;
+}
+.right-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.home-content {
+    padding: 16px;
+    background-color: #f0f0f0; /* İsteğe göre değiştirilebilir */
+    border-bottom: 1px solid #ccc;
+}
+
+.content-frame {
+    width: 100%;
+    height: 100%;
+    flex: 1;
+    border: none;
+}
+.veteriner-dashboard img.active {
+    transform: translateY(2px);
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+    background-color: #e0e0e0;
+}
+

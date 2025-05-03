@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Ana Menü</title>
+  <link rel="stylesheet" href="home.css">
+  <script>
+    function calculateAge() {
+      const birthDate = new Date(document.getElementById('dogumTarihi').value);
+      if (!isNaN(birthDate)) {
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+        }
+        document.getElementById('yas').value = age + " yaşında";
+      } else {
+        document.getElementById('yas').value = "";
+      }
+    }
+  </script>
+</head>
+<body>
+<div class="container">
+  <h2>Hayvan Bilgileri</h2>
+
+  <form method="POST" action="kaydet.php">
+    <label for="irk">Irk:</label>
+    <input type="text" id="irk" name="irk" required>
+
+    <label for="cins">Cins:</label>
+    <input type="text" id="cins" name="cins" required>
+
+    <label for="dogumTarihi">Doğum Tarihi:</label>
+    <input type="date" id="dogumTarihi" name="dogumTarihi" onchange="calculateAge()" required>
+
+    <label for="yas">Yaş:</label>
+    <input type="text" id="yas" name="yas" readonly>
+
+    <label for="asilar">Aşı Türleri:</label>
+    <textarea id="asilar" name="asilar" rows="4" placeholder="Örn: Karma, Kuduz, Parvo..."></textarea>
+
+    <button type="submit">Kaydet</button>
+  </form>
+</div>
+</body>
+</html>

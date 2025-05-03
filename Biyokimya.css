@@ -1,0 +1,168 @@
+/* Genel ayarlar */
+body {
+    font-family: Arial, sans-serif;
+    background-color: white;
+    margin: 20px;
+    padding: 5px;
+}
+
+/* Başlık renkleri */
+h1, h3 {
+    color: #333;
+}
+
+/* Tab Butonları */
+.tabs {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    background-color: #2d3e50;
+    border-radius: 8px;
+}
+
+.tabs button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    flex: 1;
+    margin-right: 5px;
+    outline: none;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+}
+
+.tabs button:last-child {
+    margin-right: 0;
+}
+
+.tabs button:hover {
+    background-color: #45a049;
+}
+
+.tabs button.active {
+    background-color: #2d3e50;
+}
+
+/* Tab içerikleri */
+.tab-content {
+    display: none;
+    padding: 20px;
+    border-top: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Kategori buton alanı */
+.kategori-listesi {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 12px;
+}
+
+/* Kategori butonları */
+.kategori-listesi button {
+    background-color: #009688;
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 6px;
+    width: 150px;
+    height: 50px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.kategori-listesi button:hover {
+    background-color: #00796b;
+    transform: scale(1.05);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.kategori-listesi button:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Hepsini Aç / Kapat sabit bar */
+.kontrol-butonlari {
+    position: sticky;
+    top: 0;
+    background: white;
+    padding: 10px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    z-index: 100;
+}
+
+.kontrol-butonlari button {
+    background-color: #2d3e50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.kontrol-butonlari button:hover {
+    background-color: #1f2b38;
+}
+
+/* Test Sonuçları */
+#testSonuclari {
+    margin-top: 20px;
+}
+
+#testSonuclari table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#testSonuclari table, th, td {
+    border: 1px solid #ddd;
+}
+
+#testSonuclari th, td {
+    padding: 12px;
+    text-align: left;
+}
+
+#testSonuclari th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+#testSonuclari td {
+    background-color: #f9f9f9;
+}
+
+#testSonuclari tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+#testSonuclari tr:hover {
+    background-color: #ddd;
+}
+
+/* Görsel buton efekti */
+button {
+    transition: transform 0.3s ease;
+}
+
+button:hover {
+    transform: scale(1.05);
+}

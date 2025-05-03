@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Veteriner Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+<div class="main">
+  <!-- Sol Menü ve Hasta ID Girişi -->
+  <div class="veteriner-dashboard">
+    <!-- En üstte Hasta ID inputu -->
+    <div class="hasta-id-input">
+      <input type="text" id="hastaId" name="hastaId" placeholder="Kod:" style="margin: 8px 8px; width: 80px; padding:2px;" onchange="hastaBilgisiGetir()">
+    </div>
+
+    <!-- Menü -->
+    <a href="home.html" target="content-frame">
+      <img src="Images/home.png" class="tooltip-img" data-tooltip="Ana Menü" alt="Ana Menü">
+    </a>
+    <a href="Geçmiş.html" target="content-frame">
+      <img src="Images/clock-png-25762.png" class="tooltip-img" data-tooltip="Geçmiş" alt="Geçmiş">
+    </a>
+    <a href="Biyokimya.html" target="content-frame">
+      <img src="Images/tube.png" class="tooltip-img" data-tooltip="Biyokimya" alt="Biyokimya">
+    </a>
+    <a href="Patoloji.html" target="content-frame">
+      <img src="Images/scalpel.png" class="tooltip-img" data-tooltip="Patoloji" alt="Patoloji">
+    </a>
+    <a href="Radyoloji.html" target="content-frame">
+      <img src="Images/radioactive.png" class="tooltip-img" data-tooltip="Radyoloji" alt="Radyoloji">
+    </a>
+    <a href="Envanter.html" target="content-frame">
+      <img src="Images/box.png" class="tooltip-img" data-tooltip="Envanter" alt="Envanter">
+    </a>
+  </div>
+
+  <!-- Ana İçerik -->
+  <iframe name="content-frame" class="content-frame" src="home.html" frameborder="0"></iframe>
+</div>
+
+<!-- Tooltip -->
+<div id="tooltip" class="floating-tooltip"></div>
+
+<script>
+  const tooltip = document.getElementById('tooltip');
+
+  document.querySelectorAll('.tooltip-img').forEach(img => {
+    img.addEventListener('mousemove', (e) => {
+      const text = img.getAttribute('data-tooltip');
+      tooltip.textContent = text;
+      tooltip.style.top = (e.clientY + 15) + 'px';
+      tooltip.style.left = (e.clientX + 15) + 'px';
+      tooltip.style.opacity = 1;
+    });
+
+    img.addEventListener('mouseleave', () => {
+      tooltip.style.opacity = 0;
+    });
+
+    img.addEventListener('click', () => {
+      document.querySelectorAll('.tooltip-img').forEach(btn => btn.classList.remove('active'));
+      img.classList.add('active');
+    });
+  });
+
+  async function hastaBilgisiGetir() {
+    const hastaId = document.getElementById('hastaId').value;
+    if (!hastaId) return;
+
+    try {
+      const response = await fetch(`get_hasta.php?id=${hastaId}`);
+      if (!response.ok) throw new Error("Hasta bulunamadı.");
+
+      const data = await response.json();
+
+      const iframe = document.querySelector('iframe');
+      iframe.contentWindow.postMessage({ type: 'hastaVerisi', data }, '*');
+    } catch (error) {
+      alert("Hasta bulunamadı.");
+      console.error(error);
+    }
+  }
+
+  // home.html içeriğine mesajı iletme
+  window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'hastaVerisi') {
+      const iframe = document.querySelector('iframe');
+      iframe.contentWindow.postMessage(event.data, '*');
+    }
+  });
+</script>
+</body>
+</html>

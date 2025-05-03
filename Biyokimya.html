@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Biyokimya Sonuçları</title>
+  <link rel="stylesheet" href="biyokimya.css">
+</head>
+<body>
+
+<div class="tabs">
+  <button onclick="showTab('kan')">Kan Sonuçları</button>
+  <button onclick="showTab('idrar')">İdrar Sonuçları</button>
+</div>
+
+<div id="kan" class="tab-content active">
+  <div class="kontrol-butonlari">
+    <button onclick="hepsiniAc('kan')">Hepsini Aç</button>
+    <button onclick="hepsiniKapat('kan')">Hepsini Kapat</button>
+  </div>
+  <div id="kanKategoriListesi" class="kategori-listesi"></div>
+</div>
+
+<div id="idrar" class="tab-content">
+  <div class="kontrol-butonlari">
+    <button onclick="hepsiniAc('idrar')">Hepsini Aç</button>
+    <button onclick="hepsiniKapat('idrar')">Hepsini Kapat</button>
+  </div>
+  <div id="idrarKategoriListesi" class="kategori-listesi"></div>
+</div>
+
+<script>
+  let aktifHastaId = null;
+
+  window.addEventListener('message', function(event) {
+    const data = event.data;
+    if (data && data.hastaId) {
+      aktifHastaId = data.hastaId;
+      biyokimyaVerileriniYukle(aktifHastaId, 'kan');
+      biyokimyaVerileriniYukle(aktifHastaId, 'idrar');
+    }
+  });
+
+  const sabitKategoriler = {
+    kan: ['Karaciğer Fonksiyon Testleri', 'Böbrek Fonksiyon Testleri', 'Enerji ve Lipid Metabolizması', 'Elektrolitler ve Mineraller', 'Kas ve Kalp Enzimleri', 'Pankreas Fonksiyon Testleri', 'Hormonlar ve Spesifik Testler', 'Kan Gazları ve Asit-Baz Dengesi'],
+    idrar: ['Protein', 'Glukoz', 'pH', 'Spesifik Ağırlık', 'Bilirubin', 'Keton Cisimleri', 'Ürobilinojen', 'Kreatinin']
+  };
+
+  async function biyokimyaVerileriniYukle(hastaId, tip) {
+    try {
+      const response = await fetch(`http://192.168.68.74:5123/api?hasta_id=${hastaId}`);
+      const veriler = await response.json();
+      const kategoriler = {};
+
+      veriler.forEach(test => {
+        if (!kategoriler[test.kategori]) kategoriler[test.kategori] = [];
+        kategoriler[test.kategori].push(test);
+      });
+
+      kategoriListesiOlustur(kategoriler, tip);
+    } catch (error) {
+      console.error("Veri çekme hatası:", error);
+      kategoriListesiOlustur(null, tip);
+    }
+  }
+
+  function kategoriListesiOlustur(kategoriler, tip) {
+    const liste = document.getElementById(tip === 'kan' ? "kanKategoriListesi" : "idrarKategoriListesi");
+    liste.innerHTML = "";
+
+    const kategorilerListesi = kategoriler ? Object.keys(kategoriler) : sabitKategoriler[tip];
+
+    kategorilerListesi.forEach(kategori => {
+      const btn = document.createElement("button");
+      btn.textContent = kategori;
+      btn.onclick = () => testleriGoster(kategori, kategoriler || {}, tip);
+      liste.appendChild(btn);
+    });
+  }
+
+  function testleriGoster(kategori, kategoriler, tip) {
+    const hedefDiv = document.getElementById(tip === 'kan' ? "kanKategoriListesi" : "idrarKategoriListesi");
+
+    // Önceden varsa kaldır (çift açılmayı önle)
+    const eski = document.getElementById(`test_${kategori}`);
+    if (eski) eski.remove();
+
+    const alan = document.createElement("div");
+    alan.setAttribute('id', `test_${kategori}`);
+    alan.innerHTML = `<h3>${kategori}</h3><table><tr><th>Test Adı</th><th>Sonuç</th><th>Tarih</th></tr></table>`;
+
+    const tablo = alan.querySelector("table");
+
+    if (kategoriler[kategori]) {
+      kategoriler[kategori].forEach(test => {
+        const satir = document.createElement("tr");
+        satir.innerHTML = `<td>${test.test_adi}</td><td>${test.sonuc}</td><td>${test.tarih}</td>`;
+        tablo.appendChild(satir);
+      });
+    } else {
+      const satir = document.createElement("tr");
+      satir.innerHTML = "<td colspan='3'>Bu kategoriye ait test sonuçları bulunmamaktadır.</td>";
+      tablo.appendChild(satir);
+    }
+
+    hedefDiv.appendChild(alan);
+  }
+
+  function showTab(tabName) {
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+    document.getElementById(tabName).classList.add('active');
+  }
+
+  window.onload = () => {
+    kategoriListesiOlustur(null, 'kan');
+    kategoriListesiOlustur(null, 'idrar');
+  };
+
+  function hepsiniAc(tip) {
+    const kategorilerListesi = sabitKategoriler[tip];
+    kategorilerListesi.forEach(kategori => {
+      testleriGoster(kategori, {}, tip);
+    });
+  }
+
+  function hepsiniKapat(tip) {
+    const hedefDiv = document.getElementById(tip === 'kan' ? "kanKategoriListesi" : "idrarKategoriListesi");
+    sabitKategoriler[tip].forEach(kategori => {
+      const alan = document.getElementById(`test_${kategori}`);
+      if (alan) alan.remove();
+    });
+  }
+</script>
+</body>
+</html>
