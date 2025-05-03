@@ -69,7 +69,12 @@
     if (!hastaId) return;
 
     try {
-      const response = await fetch(`get_hasta.php?id=${hastaId}`);
+      const response = await fetch(`http://192.168.1.5:5000/api/patients/${hastaId}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
       if (!response.ok) throw new Error("Hasta bulunamadı.");
 
       const data = await response.json();

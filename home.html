@@ -5,6 +5,27 @@
   <title>Ana Menü</title>
   <link rel="stylesheet" href="home.css">
   <script>
+    window.addEventListener("message", function (event) {
+      const msg = event.data;
+      if (!msg || msg.type !== "hastaVerisi" || !msg.data) return;
+
+      const patient = msg.data;
+
+      document.getElementById("irk").value = patient.species || "";
+      document.getElementById("cins").value = patient.breed || "";
+
+      if (patient.birthDate) {
+        const isoDate = new Date(patient.birthDate).toISOString().split('T')[0];
+        document.getElementById("dogumTarihi").value = isoDate;
+        calculateAge(); // yaş hesabı güncellensin
+      }
+
+      // Henüz aşı bilgisi yoksa sabit veri girilebilir
+      document.getElementById("asilar").value = patient.vaccines || "";
+    });
+  </script>
+  <script>
+
     function calculateAge() {
       const birthDate = new Date(document.getElementById('dogumTarihi').value);
       if (!isNaN(birthDate)) {

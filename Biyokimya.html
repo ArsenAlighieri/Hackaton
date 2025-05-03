@@ -31,10 +31,10 @@
 <script>
   let aktifHastaId = null;
 
-  window.addEventListener('message', function(event) {
+  window.addEventListener("message", function (event) {
     const data = event.data;
-    if (data && data.hastaId) {
-      aktifHastaId = data.hastaId;
+    if (data && data.data && data.data.id) {
+      aktifHastaId = data.data.id;
       biyokimyaVerileriniYukle(aktifHastaId, 'kan');
       biyokimyaVerileriniYukle(aktifHastaId, 'idrar');
     }
@@ -47,13 +47,25 @@
 
   async function biyokimyaVerileriniYukle(hastaId, tip) {
     try {
-      const response = await fetch(`http://192.168.68.74:5123/api?hasta_id=${hastaId}`);
+      const response = await fetch(`http://192.168.1.5:5000/api/bloodtests/patient/${hastaId}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      if (!response.ok) throw new Error("API yanıtı başarısız.");
+
       const veriler = await response.json();
       const kategoriler = {};
 
       veriler.forEach(test => {
-        if (!kategoriler[test.kategori]) kategoriler[test.kategori] = [];
-        kategoriler[test.kategori].push(test);
+        const kategori = test.testType || 'Diğer';
+        if (!kategoriler[kategori]) kategoriler[kategori] = [];
+        kategoriler[kategori].push({
+          test_adi: test.name,
+          sonuc: test.result,
+          tarih: new Date(test.date).toLocaleDateString("tr-TR")
+        });
       });
 
       kategoriListesiOlustur(kategoriler, tip);
@@ -79,13 +91,11 @@
 
   function testleriGoster(kategori, kategoriler, tip) {
     const hedefDiv = document.getElementById(tip === 'kan' ? "kanKategoriListesi" : "idrarKategoriListesi");
-
-    // Önceden varsa kaldır (çift açılmayı önle)
     const eski = document.getElementById(`test_${kategori}`);
     if (eski) eski.remove();
 
     const alan = document.createElement("div");
-    alan.setAttribute('id', `test_${kategori}`);
+    alan.setAttribute("id", `test_${kategori}`);
     alan.innerHTML = `<h3>${kategori}</h3><table><tr><th>Test Adı</th><th>Sonuç</th><th>Tarih</th></tr></table>`;
 
     const tablo = alan.querySelector("table");
@@ -98,7 +108,7 @@
       });
     } else {
       const satir = document.createElement("tr");
-      satir.innerHTML = "<td colspan='3'>Bu kategoriye ait test sonuçları bulunmamaktadır.</td>";
+      satir.innerHTML = "<td colspan='3'>Bu kategoriye ait test sonucu bulunmamaktadır.</td>";
       tablo.appendChild(satir);
     }
 
@@ -110,16 +120,9 @@
     document.getElementById(tabName).classList.add('active');
   }
 
-  window.onload = () => {
-    kategoriListesiOlustur(null, 'kan');
-    kategoriListesiOlustur(null, 'idrar');
-  };
-
   function hepsiniAc(tip) {
     const kategorilerListesi = sabitKategoriler[tip];
-    kategorilerListesi.forEach(kategori => {
-      testleriGoster(kategori, {}, tip);
-    });
+    kategorilerListesi.forEach(kategori => testleriGoster(kategori, {}, tip));
   }
 
   function hepsiniKapat(tip) {
@@ -129,6 +132,12 @@
       if (alan) alan.remove();
     });
   }
+
+  window.onload = () => {
+    kategoriListesiOlustur(null, 'kan');
+    kategoriListesiOlustur(null, 'idrar');
+  };
 </script>
+
 </body>
 </html>
